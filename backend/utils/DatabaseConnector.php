@@ -6,16 +6,18 @@ use PDO;
 
 class DatabaseConnector
 {
-    private $host = 'db';
-    private $db = 'ehealth';
-    private $user = 'user';
-    private $pass = 'password';
-    private $charset = 'utf8mb4';
-    private $pdo;
+    private static ?DatabaseConnector $instance = null;
+    private PDO $pdo;
 
-    public function __construct()
+    private function __construct()
     {
-        $dsn = "mysql:host=$this->host;dbname=$this->db;charset=$this->charset";
+        $host = 'db';
+        $db = 'ehealth';
+        $user = 'user';
+        $pass = 'password';
+        $charset = 'utf8mb4';
+
+        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
         $options = [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -23,10 +25,19 @@ class DatabaseConnector
         ];
 
         try {
-            $this->pdo = new PDO($dsn, $this->user, $this->pass, $options);
+            $this->pdo = new PDO($dsn, $user, $pass, $options);
         } catch (\PDOException $e) {
             throw new \PDOException($e->getMessage(), (int)$e->getCode());
         }
+    }
+
+    public static function getInstance(): DatabaseConnector
+    {
+        if (self::$instance === null) {
+            self::$instance = new DatabaseConnector();
+        }
+
+        return self::$instance;
     }
 
     public function getPdo(): PDO

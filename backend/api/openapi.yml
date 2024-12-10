@@ -21,11 +21,8 @@ paths:
                   type: integer
                 note:
                   type: string
-                image:
-                  type: string
-                  format: binary
       responses:
-        '200':
+        '201':
           description: Medication created
   /medications/{id}:
     delete:
@@ -37,7 +34,7 @@ paths:
           schema:
             type: integer
       responses:
-        '200':
+        '204':
           description: Medication deleted
     put:
       summary: Update a medication
@@ -62,9 +59,6 @@ paths:
                   type: integer
                 note:
                   type: string
-                image:
-                  type: string
-                  format: binary
       responses:
         '200':
           description: Medication updated
@@ -80,3 +74,21 @@ paths:
       responses:
         '200':
           description: Medications retrieved
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+                    started_at:
+                      type: string
+                      format: date-time
+                    dosage:
+                      type: integer
+                    note:
+                      type: string

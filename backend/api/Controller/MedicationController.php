@@ -6,58 +6,24 @@ use PDOException;
 use utils\DatabaseConnector;
 use utils\QueryBuilder;
 use utils\Validator;
+use RuntimeException;
 
-class MedicationController
+readonly class MedicationController
 {
-    private readonly QueryBuilder $queryBuilder;
+    private \PDO $pdo;
 
-    public function __construct(DatabaseConnector $databaseConnector)
+    public function __construct(private QueryBuilder $queryBuilder)
     {
-        $this->queryBuilder = new QueryBuilder($databaseConnector->getPdo());
+        $databaseConnector = DatabaseConnector::getInstance();
+        $this->pdo = $databaseConnector->getPdo();
     }
 
-    private function executeQuery(string $sql, array $bindings): false|\PDOStatement
-    {
-        $stmt = $this->queryBuilder->getPdo()->prepare($sql);
-        if ($stmt === false) {
-            throw new \RuntimeException('Failed to prepare statement');
-        }
-        $stmt->execute($bindings);
-        return $stmt;
-    }
-
-    private function jsonResponse(array $data)
+    public function createMedication(): void
     {
         try {
-            echo json_encode($data, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $jsonException) {
-            error_log($jsonException->getMessage());
-            echo json_encode(['error' => 'JSON encoding error']);
-        }
-    }
-
-    private function validateInput(array $data, array $rules): void
-    {
-        foreach ($rules as $field => $rule) {
-            if (!call_user_func([$rule['validator'], $rule['method']], $data[$field] ?? null, ...($rule['params'] ?? []))) {
-                throw new \RuntimeException($rule['error']);
-            }
-        }
-    }
-
-    private function validateRole(array $data, string $expectedRole): void
-    {
-        if ($data['role'] !== $expectedRole) {
-            throw new \Exception('Unauthorized access');
-        }
-    }
-
-    public function createMedication()
-    {
-        try {
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
             if (!is_array($data)) {
-                throw new \RuntimeException('Invalid input');
+                throw new RuntimeException('Invalid input');
             }
 
             $this->validateInput($data, [
@@ -80,17 +46,17 @@ class MedicationController
 
             $this->executeQuery($query['sql'], $query['bindings']);
 
-            $this->jsonResponse(['message' => 'Medication created']);
+            $this->jsonResponse(['message' => 'Medication created'], 201);
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            $this->jsonResponse(['error' => 'Database error']);
+            $this->jsonResponse(['error' => 'Database error'], 500);
         } catch (\Exception $e) {
             error_log($e->getMessage());
-            $this->jsonResponse(['error' => $e->getMessage()]);
+            $this->jsonResponse(['error' => $e->getMessage()], 400);
         }
     }
 
-    public function deleteMedication($vars)
+    public function deleteMedication($vars): void
     {
         try {
             $this->validateInput($vars, [
@@ -104,22 +70,22 @@ class MedicationController
 
             $this->executeQuery($query['sql'], $query['bindings']);
 
-            $this->jsonResponse(['message' => 'Medication deleted']);
+            $this->jsonResponse(['message' => 'Medication deleted'], 200);
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            $this->jsonResponse(['error' => 'Database error']);
+            $this->jsonResponse(['error' => 'Database error'], 500);
         } catch (\Exception $e) {
             error_log($e->getMessage());
-            $this->jsonResponse(['error' => $e->getMessage()]);
+            $this->jsonResponse(['error' => $e->getMessage()], 400);
         }
     }
 
-    public function updateMedication($vars)
+    public function updateMedication($vars): void
     {
         try {
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
             if (!is_array($data)) {
-                throw new \RuntimeException('Invalid input');
+                throw new RuntimeException('Invalid input');
             }
 
             $this->validateInput($data, [
@@ -141,17 +107,17 @@ class MedicationController
 
             $this->executeQuery($query['sql'], $query['bindings']);
 
-            $this->jsonResponse(['message' => 'Medication updated']);
+            $this->jsonResponse(['message' => 'Medication updated'], 200);
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            $this->jsonResponse(['error' => 'Database error']);
+            $this->jsonResponse(['error' => 'Database error'], 500);
         } catch (\Exception $e) {
             error_log($e->getMessage());
-            $this->jsonResponse(['error' => $e->getMessage()]);
+            $this->jsonResponse(['error' => $e->getMessage()], 400);
         }
     }
 
-    public function getMedications($vars)
+    public function getMedications($vars): void
     {
         try {
             $this->validateInput($vars, [
@@ -166,13 +132,50 @@ class MedicationController
             $stmt = $this->executeQuery($query['sql'], $query['bindings']);
             $medications = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-            $this->jsonResponse($medications);
+            $this->jsonResponse($medications, 200);
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            $this->jsonResponse(['error' => 'Database error']);
+            $this->jsonResponse(['error' => 'Database error'], 500);
         } catch (\Exception $e) {
             error_log($e->getMessage());
-            $this->jsonResponse(['error' => $e->getMessage()]);
+            $this->jsonResponse(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    private function executeQuery(string $sql, array $bindings): false|\PDOStatement
+    {
+        $stmt = $this->pdo->prepare($sql);
+        if ($stmt === false) {
+            throw new RuntimeException('Failed to prepare statement');
+        }
+        $stmt->execute($bindings);
+        return $stmt;
+    }
+
+    private function jsonResponse(array $data, int $statusCode = 200): void
+    {
+        http_response_code($statusCode);
+        try {
+            echo json_encode($data, JSON_THROW_ON_ERROR);
+        } catch (\JsonException $jsonException) {
+            error_log($jsonException->getMessage());
+            echo json_encode(['error' => 'JSON encoding error'], JSON_THROW_ON_ERROR);
+        }
+    }
+
+    private function validateInput(array $data, array $rules): void
+    {
+        foreach ($rules as $field => $rule) {
+            if (!call_user_func([$rule['validator'], $rule['method']], $data[$field] ?? null, ...($rule['params'] ?? []))) {
+                throw new RuntimeException($rule['error']);
+            }
+        }
+    }
+
+    private function validateRole(array $data, string $expectedRole): void
+    {
+        if ($data['role'] !== $expectedRole) {
+            throw new RuntimeException('Unauthorized access');
         }
     }
 }
