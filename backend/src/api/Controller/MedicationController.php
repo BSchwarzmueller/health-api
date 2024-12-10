@@ -2,10 +2,10 @@
 
 namespace App\api\Controller;
 
+use App\src\utils\DatabaseConnector;
+use App\src\utils\QueryBuilder;
+use App\src\utils\Validator;
 use PDOException;
-use utils\DatabaseConnector;
-use utils\QueryBuilder;
-use utils\Validator;
 use RuntimeException;
 
 readonly class MedicationController

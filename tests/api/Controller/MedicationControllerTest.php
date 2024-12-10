@@ -3,9 +3,8 @@
 namespace tests\api\Controller;
 
 use api\Controller\MedicationController;
+use App\src\utils\QueryBuilder;
 use PHPUnit\Framework\TestCase;
-use utils\DatabaseConnector;
-use utils\QueryBuilder;
 
 class MedicationControllerTest extends TestCase
 {
