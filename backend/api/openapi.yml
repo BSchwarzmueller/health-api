@@ -1,0 +1,82 @@
+openapi: 3.0.0
+info:
+  title: eHealth API
+  version: 1.0.0
+paths:
+  /medications:
+    post:
+      summary: Create a new medication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                started_at:
+                  type: string
+                  format: date-time
+                dosage:
+                  type: integer
+                note:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Medication created
+  /medications/{id}:
+    delete:
+      summary: Delete a medication
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Medication deleted
+    put:
+      summary: Update a medication
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                started_at:
+                  type: string
+                  format: date-time
+                dosage:
+                  type: integer
+                note:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Medication updated
+  /medications/{user_id}:
+    get:
+      summary: Get medications for a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Medications retrieved

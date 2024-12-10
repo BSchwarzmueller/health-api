@@ -1,0 +1,31 @@
+version: '3.1'
+
+services:
+  db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ehealth
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+
+  web:
+    build: .
+    ports:
+      - "8080:80"  # Webserver läuft auf Port 8080
+    depends_on:
+      - db
+    volumes:
+      - ./frontend:/var/www/html  # Frontend-Ordner ins Container-Dateisystem
+      - ./backend:/var/www/backend  # Backend-Ordner ins Container-Dateisystem
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
