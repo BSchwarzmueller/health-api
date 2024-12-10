@@ -2,9 +2,8 @@
 
 ## Installation
 
-### Install dependencies:  
-
-composer install
+### Install dependencies and build docker image:
+make init
 
 ### Set up the database:  
 make build-database
@@ -12,12 +11,17 @@ make build-database
 ### Run the application:
 make up
 
-Make Commands
-make db-setup: Sets up the database schema and seeds initial data.
-make run: Starts the application server.
-make test: Runs the unit tests.
+### Run test
+make unit-tests
+
+### Stop the application:
+make down
 
 ## API Description
+
+### OpenAPI Documentation
+- The API documentation can be found at  backend/doc/openapi.yml
+
 ### Create a new medication
 - Endpoint: POST /medications
 - Request Body:
@@ -81,6 +85,25 @@ make test: Runs the unit tests.
     }
 ```
 - Responses:
-    200 OK: Medications retrieved successfully.
-    400 Bad Request: Invalid input.
-    500 Internal Server Error: Database error.
+  - 200 OK: Medications retrieved successfully.
+  - 400 Bad Request: Invalid input.
+  - 500 Internal Server Error: Database error.
+
+
+
+# TODO:
+
+- FIX THE ROUTER!!!!!
+- Add authentication and authorization.
+- Add image upload for medications.
+- Add more forms for different api actions
+- Add openapi documentation via SwaggerUI
+- Add pagination and filter to reduce data size
+- Add more unit tests.
+- Add version control to the API.
+
+
+# Recommendations
+
+- Use symfony or laravel for a more robust and scalable application.
+- Use symfony for simple and working routing
