@@ -11,11 +11,17 @@ make build-database
 ### Run the application:
 make up
 
+### Open form to create a new medication:
+
+open: http://localhost:8080/ (unfortunately the router is not working...)
+
+
 ### Run test
 make unit-tests
 
 ### Stop the application:
 make down
+
 
 ## API Description
 
@@ -94,6 +100,7 @@ make down
 # TODO:
 
 - FIX THE ROUTER!!!!!
+- ADD COMMENTS TO THE CODE
 - Add authentication and authorization.
 - Add image upload for medications.
 - Add more forms for different api actions
@@ -101,6 +108,7 @@ make down
 - Add pagination and filter to reduce data size
 - Add more unit tests.
 - Add version control to the API.
+- run phpstan code analysis
 
 
 # Recommendations

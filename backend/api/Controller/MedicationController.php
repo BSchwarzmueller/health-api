@@ -1,6 +1,6 @@
 <?php
 
-namespace api\Controller;
+namespace App\api\Controller;
 
 use PDOException;
 use utils\DatabaseConnector;

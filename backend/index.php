@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 require 'vendor/autoload.php';
 
 $router = new AltoRouter();
