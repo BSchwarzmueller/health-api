@@ -2,20 +2,20 @@
 
 ## Installation
 
-### Install dependencies and build docker image:
-make init
+### Install dependencies and docker-compose build:
+make init 
 
 ### Set up the database:  
-make build-database
+make deploy-database
+
+### Stop the application:
+make down
 
 ### Run the application:
 make up
 
 ### Run test
 make unit-tests
-
-### Stop the application:
-make down
 
 ### Run PHPStan
 make phpstan level=? (level can be 0-10)
