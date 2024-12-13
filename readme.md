@@ -56,6 +56,7 @@ make phpstan level=? (level can be 0-10)
 - Request Body:
 ```json
   {
+  "id": 1,
   "role": "customer"
   }
   ```
@@ -71,6 +72,7 @@ make phpstan level=? (level can be 0-10)
 - Request Body:
 ```json
     {
+    "user_id": 1,
     "name": "Updated Medication Name",
     "started_at": "2023-01-01T00:00:00Z",
     "dosage": 20,
@@ -90,6 +92,7 @@ make phpstan level=? (level can be 0-10)
   - Request Body:
 ```json
     {
+    "user_id": 1,
     "role": "pharmacist"
     }
 ```
