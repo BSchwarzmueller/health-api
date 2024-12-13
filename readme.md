@@ -105,11 +105,12 @@ make phpstan level=? (level can be 0-10)
 
 # TODO:
 
+- Complete the MVC Pattern with Model Class and Repository
+- Add image upload (and compression to .avif) for medications
 - Add authentication and authorization.
-- Add image upload for medications.
 - Add openapi documentation via SwaggerUI
 - Add pagination and filter to reduce data size
-- Add more unit tests.
+- Add more unit tests
 - Add version control to the API
 
 
