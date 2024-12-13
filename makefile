@@ -1,4 +1,4 @@
-.PHONY: init deploy-database up down unit-tests
+.PHONY: init deploy-database up down unit-tests phpstan
 
 init:
 	composer install && docker-compose build
@@ -14,3 +14,6 @@ down:
 
 unit-tests:
 	./vendor/phpunit/phpunit/phpunit tests
+
+phpstan:
+	./vendor/bin/phpstan analyse src --level=$(level)

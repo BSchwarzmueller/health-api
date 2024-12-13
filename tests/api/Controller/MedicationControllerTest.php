@@ -2,19 +2,25 @@
 
 namespace tests\api\Controller;
 
-use api\Controller\MedicationController;
-use App\src\utils\QueryBuilder;
+use App\Controllers\MedicationApiController;
+use App\Utils\DatabaseConnector;
+use App\Utils\QueryBuilder;
 use PHPUnit\Framework\TestCase;
 
 class MedicationControllerTest extends TestCase
 {
-    private MedicationController $controller;
+    private MedicationApiController $controller;
     private QueryBuilder $queryBuilder;
+    private $pdo;
 
     protected function setUp(): void
     {
+        $this->pdo = $this->createMock(\PDO::class);
+        $databaseConnector = $this->createMock(DatabaseConnector::class);
+        $databaseConnector->method('getPdo')->willReturn($this->pdo);
+
         $this->queryBuilder = $this->createMock(QueryBuilder::class);
-        $this->controller = new MedicationController($this->queryBuilder);
+        $this->controller = new MedicationApiController($databaseConnector, $this->queryBuilder);
     }
 
     public function testCreateMedication(): void

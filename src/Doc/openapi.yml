@@ -7,11 +7,20 @@ paths:
     post:
       summary: Create a new medication
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - user_id
+                - name
+                - started_at
+                - dosage
+                - role
               properties:
+                user_id:
+                  type: integer
                 name:
                   type: string
                 started_at:
@@ -20,6 +29,8 @@ paths:
                 dosage:
                   type: integer
                 note:
+                  type: string
+                role:
                   type: string
       responses:
         '201':
@@ -33,6 +44,17 @@ paths:
           required: true
           schema:
             type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role
+              properties:
+                role:
+                  type: string
       responses:
         '204':
           description: Medication deleted
@@ -45,10 +67,16 @@ paths:
           schema:
             type: integer
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - name
+                - started_at
+                - dosage
+                - role
               properties:
                 name:
                   type: string
@@ -58,6 +86,8 @@ paths:
                 dosage:
                   type: integer
                 note:
+                  type: string
+                role:
                   type: string
       responses:
         '200':
@@ -71,6 +101,17 @@ paths:
           required: true
           schema:
             type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role
+              properties:
+                role:
+                  type: string
       responses:
         '200':
           description: Medications retrieved

@@ -227,7 +227,7 @@ readonly class MedicationApiController
     /**
      * Execute a SQL query with bindings.
      */
-    private function executeQuery(string $sql, array $bindings): false|\PDOStatement
+    private function executeQuery(string $sql, array $bindings): \PDOStatement
     {
         $stmt = $this->pdo->prepare($sql);
         if ($stmt === false) {

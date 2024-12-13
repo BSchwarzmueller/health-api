@@ -15,13 +15,14 @@ make up
 
 open: http://localhost:8080/ (unfortunately the router is not working...)
 
-
 ### Run test
 make unit-tests
 
 ### Stop the application:
 make down
 
+### Run PHPStan
+make phpstan level=? (level can be 0-10)
 
 ## API Description
 
