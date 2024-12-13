@@ -17,12 +17,13 @@ services:
   web:
     build: .
     ports:
-      - "8080:80"  # Webserver läuft auf Port 8080
+      - "8080:80"
     depends_on:
       - db
     volumes:
-      - ./frontend:/var/www/html  # Frontend-Ordner ins Container-Dateisystem
-      - ./backend:/var/www/backend  # Backend-Ordner ins Container-Dateisystem
+      - ./public:/var/www/html
+      - ./src:/var/www/src
+      - ./vendor:/var/www/vendor
     networks:
       - app-network
 

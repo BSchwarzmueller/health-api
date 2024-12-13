@@ -1,21 +1,48 @@
 <?php
 
-namespace App\api\Controller;
+namespace App\Controllers;
 
-use App\src\utils\DatabaseConnector;
-use App\src\utils\QueryBuilder;
-use App\src\utils\Validator;
+use App\Utils\DatabaseConnector;
+use App\Utils\QueryBuilder;
+use App\Utils\Validator;
 use PDOException;
 use RuntimeException;
 
-readonly class MedicationController
+readonly class MedicationApiController
 {
     private \PDO $pdo;
+    private QueryBuilder $queryBuilder;
 
-    public function __construct(private QueryBuilder $queryBuilder)
+    private const MAX_ROLE_LENGTH = 50;
+    private const MAX_NAME_LENGTH = 100;
+    private const MAX_NOTE_LENGTH = 500;
+
+    public function __construct()
     {
         $databaseConnector = DatabaseConnector::getInstance();
         $this->pdo = $databaseConnector->getPdo();
+        $this->queryBuilder = new QueryBuilder();
+    }
+
+    private function getCreateValidationRules(): array
+    {
+        return [
+            'user_id' => $this->createValidationRule('sanitizeInt', 'Invalid UserId input'),
+            'name' => $this->createValidationRule('sanitizeString', 'Invalid Name input', [self::MAX_NAME_LENGTH]),
+            'started_at' => $this->createValidationRule('sanitizeDateTime', 'Invalid startedAt input'),
+            'dosage' => $this->createValidationRule('sanitizeInt', 'Invalid Dosage input'),
+            'note' => $this->createValidationRule('sanitizeString', 'Invalid Note input', [self::MAX_NOTE_LENGTH])
+        ];
+    }
+
+    private function createValidationRule(string $method, string $error, array $params = []): array
+    {
+        return [
+            'validator' => Validator::class,
+            'method' => $method,
+            'error' => $error,
+            'params' => $params
+        ];
     }
 
     public function createMedication(): void
@@ -26,18 +53,16 @@ readonly class MedicationController
                 throw new RuntimeException('Invalid input');
             }
 
-            $this->validateInput($data, [
-                'role' => ['validator' => Validator::class, 'method' => 'sanitizeString', 'error' => 'Unauthorized access', 'params' => []],
-                'name' => ['validator' => Validator::class, 'method' => 'sanitizeString', 'error' => 'Invalid input', 'params' => [100]],
-                'started_at' => ['validator' => Validator::class, 'method' => 'sanitizeDateTime', 'error' => 'Invalid input', 'params' => []],
-                'dosage' => ['validator' => Validator::class, 'method' => 'sanitizeInt', 'error' => 'Invalid input', 'params' => []],
-                'note' => ['validator' => Validator::class, 'method' => 'sanitizeString', 'error' => 'Invalid input', 'params' => [500]]
-            ]);
+            $this->validateRole($data, 'customer');
+
+            $userId = (int)($data['user_id'] ?? 1);
+
+            $this->validateInput($data, $this->getCreateValidationRules());
 
             $this->validateRole($data, 'customer');
 
             $query = $this->queryBuilder->table('medications')->insert([
-                'user_id' => $data['user_id'],
+                'user_id' => $userId,
                 'name' => $data['name'],
                 'started_at' => $data['started_at'],
                 'dosage' => $data['dosage'],
@@ -49,7 +74,7 @@ readonly class MedicationController
             $this->jsonResponse(['message' => 'Medication created'], 201);
         } catch (PDOException $e) {
             error_log($e->getMessage());
-            $this->jsonResponse(['error' => 'Database error'], 500);
+            $this->jsonResponse(['error' => $e->getMessage()], 500);
         } catch (\Exception $e) {
             error_log($e->getMessage());
             $this->jsonResponse(['error' => $e->getMessage()], 400);
@@ -59,12 +84,16 @@ readonly class MedicationController
     public function deleteMedication($vars): void
     {
         try {
-            $this->validateInput($vars, [
-                'id' => ['validator' => Validator::class, 'method' => 'sanitizeInt', 'error' => 'Invalid input or unauthorized access', 'params' => []],
-                'role' => ['validator' => Validator::class, 'method' => 'sanitizeString', 'error' => 'Invalid input or unauthorized access', 'params' => []]
-            ]);
+            $data = json_decode(file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR);
+            if (!is_array($data)) {
+                throw new RuntimeException('Invalid input');
+            }
 
-            $this->validateRole($vars, 'customer');
+            $this->validateRole($data, 'customer');
+
+            $this->validateInput($vars, [
+                'id' => $this->createValidationRule('sanitizeInt', 'Invalid Medication ID'),
+            ]);
 
             $query = $this->queryBuilder->table('medications')->delete($vars['id']);
 
@@ -87,16 +116,13 @@ readonly class MedicationController
             if (!is_array($data)) {
                 throw new RuntimeException('Invalid input');
             }
-
-            $this->validateInput($data, [
-                'role' => ['validator' => Validator::class, 'method' => 'sanitizeString', 'error' => 'Unauthorized access', 'params' => []],
-                'name' => ['validator' => Validator::class, 'method' => 'sanitizeString', 'error' => 'Invalid input', 'params' => [100]],
-                'started_at' => ['validator' => Validator::class, 'method' => 'sanitizeDateTime', 'error' => 'Invalid input', 'params' => []],
-                'dosage' => ['validator' => Validator::class, 'method' => 'sanitizeInt', 'error' => 'Invalid input', 'params' => []],
-                'note' => ['validator' => Validator::class, 'method' => 'sanitizeString', 'error' => 'Invalid input', 'params' => [500]]
-            ]);
-
             $this->validateRole($data, 'customer');
+            $this->validateInput($data, [
+                'name' => $this->createValidationRule('sanitizeString', 'Invalid input', [self::MAX_NAME_LENGTH]),
+                'started_at' => $this->createValidationRule('sanitizeDateTime', 'Invalid input'),
+                'dosage' => $this->createValidationRule('sanitizeInt', 'Invalid input'),
+                'note' => $this->createValidationRule('sanitizeString', 'Invalid input', [self::MAX_NOTE_LENGTH])
+            ]);
 
             $query = $this->queryBuilder->table('medications')->update([
                 'name' => $data['name'],
@@ -121,8 +147,7 @@ readonly class MedicationController
     {
         try {
             $this->validateInput($vars, [
-                'user_id' => ['validator' => Validator::class, 'method' => 'sanitizeInt', 'error' => 'Invalid input', 'params' => []],
-                'role' => ['validator' => Validator::class, 'method' => 'sanitizeString', 'error' => 'Invalid input', 'params' => [50]]
+                'user_id' => $this->createValidationRule('sanitizeInt', 'Invalid input'),
             ]);
 
             $this->validateRole($vars, 'pharmacist');
@@ -132,7 +157,34 @@ readonly class MedicationController
             $stmt = $this->executeQuery($query['sql'], $query['bindings']);
             $medications = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-            $this->jsonResponse($medications, 200);
+            if ($medications) {
+                $this->jsonResponse($medications, 200);
+            } else {
+                $this->jsonResponse(['error' => 'No medications found'], 404);
+            }
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            $this->jsonResponse(['error' => 'Database error'], 500);
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            $this->jsonResponse(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    public function getMedication($vars): void
+    {
+        try {
+            $medicationId = $vars['id'];
+            $query = $this->queryBuilder->table('medications')->where('id', '=', $medicationId)->get();
+
+            $stmt = $this->executeQuery($query['sql'], $query['bindings']);
+            $medication = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            if ($medication) {
+                $this->jsonResponse($medication, 200);
+            } else {
+                $this->jsonResponse(['error' => 'Medication not found'], 404);
+            }
         } catch (PDOException $e) {
             error_log($e->getMessage());
             $this->jsonResponse(['error' => 'Database error'], 500);

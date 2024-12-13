@@ -1,13 +1,13 @@
-.PHONY: init build-database up down unit-tests
+.PHONY: init deploy-database up down unit-tests
 
 init:
-	cd backend && composer install && cd .. && docker-compose up --build
+	composer install && docker-compose build
 
-build-database:
+deploy-database:
 	docker exec -i $$(docker-compose ps -q db) mysql -uuser -ppassword ehealth < schema.sql
 
 up:
-	docker-compose up -d
+	docker-compose up -d --remove-orphans
 
 down:
 	docker-compose down

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\utils;
+namespace App\Utils;
 
 use PDO;
 
@@ -13,8 +13,8 @@ class DatabaseConnector
     {
         $host = 'db';
         $db = 'ehealth';
-        $user = 'user';
-        $pass = 'password';
+        $user = 'root';
+        $pass = 'root';
         $charset = 'utf8mb4';
 
         $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

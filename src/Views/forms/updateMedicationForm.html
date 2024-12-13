@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Medication</title>
+</head>
+<body>
+<h1>Update Medication</h1>
+<form id="update-medication-form">
+    <label for="medication_id">Medication ID:</label>
+    <input type="text" id="medication_id" name="medication_id" required>
+    <br><br>
+    <label for="name">Medication Name:</label>
+    <input type="text" id="name" name="name" required maxlength="100">
+    <br><br>
+    <label for="started_at">Start Date:</label>
+    <input type="datetime-local" id="started_at" name="started_at" required>
+    <br><br>
+    <label for="dosage">Dosage:</label>
+    <input type="number" id="dosage" name="dosage" required>
+    <br><br>
+    <label for="note">Note (optional):</label>
+    <textarea id="note" name="note" maxlength="500"></textarea>
+    <br><br>
+    <input type="hidden" name="role" id="role" value="customer">
+    <button type="submit">Update Medication</button>
+</form>
+<script src="/js/forms/handleFormSubmit.js"></script>
+</body>
+</html>

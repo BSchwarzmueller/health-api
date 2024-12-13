@@ -1,12 +1,12 @@
 <?php
 
-namespace App\utils;
+namespace App\Utils;
 
 class Validator
 {
     public static function sanitizeString($string)
     {
-        return filter_var($string, FILTER_SANITIZE_STRING);
+        return filter_var($string, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     }
 
     public static function validateString($string, $maxLength)
@@ -26,7 +26,7 @@ class Validator
 
     public static function sanitizeDateTime($dateTime)
     {
-        return filter_var($dateTime, FILTER_SANITIZE_STRING);
+        return filter_var($dateTime, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     }
 
     public static function validateDateTime($dateTime)
