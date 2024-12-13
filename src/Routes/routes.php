@@ -27,10 +27,10 @@ return FastRoute\simpleDispatcher(function(RouteCollector $r) {
     // *********************************************************************************************************************
     // API
     $r->addGroup('/api', function (RouteCollector $r) {
-        $r->addRoute('GET', '/medications', 'App\Controllers\MedicationApiController@getMedications');
-        $r->addRoute('POST', '/medications', 'App\Controllers\MedicationApiController@createMedication');
-        $r->addRoute('GET', '/medications/{id:\d+}', 'App\Controllers\MedicationApiController@getMedication');
-        $r->addRoute('PUT', '/medications/{id:\d+}', 'App\Controllers\MedicationApiController@updateMedication');
-        $r->addRoute('DELETE', '/medication/{id:\d+}', 'App\Controllers\MedicationApiController@deleteMedication');
+        $r->addRoute('GET', '/medications', 'App\Controllers\api\MedicationApiController@getMedications');
+        $r->addRoute('POST', '/medications', 'App\Controllers\api\MedicationApiController@createMedication');
+        $r->addRoute('GET', '/medications/{id:\d+}', 'App\Controllers\api\MedicationApiController@getMedication');
+        $r->addRoute('PUT', '/medications/{id:\d+}', 'App\Controllers\api\MedicationApiController@updateMedication');
+        $r->addRoute('DELETE', '/medication/{id:\d+}', 'App\Controllers\api\MedicationApiController@deleteMedication');
     });
 });
