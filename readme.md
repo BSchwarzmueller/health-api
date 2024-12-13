@@ -11,10 +11,6 @@ make build-database
 ### Run the application:
 make up
 
-### Open form to create a new medication:
-
-open: http://localhost:8080/ (unfortunately the router is not working...)
-
 ### Run test
 make unit-tests
 
@@ -24,10 +20,16 @@ make down
 ### Run PHPStan
 make phpstan level=? (level can be 0-10)
 
+## How to
+
+ visit http://localhost:8080/ to access the 'menu'
+
+
+
 ## API Description
 
 ### OpenAPI Documentation
-- The API documentation can be found at  backend/doc/openapi.yml
+- The API documentation can be found at  /src/Doc/openapi.yml
 
 ### Create a new medication
 - Endpoint: POST /medications
@@ -100,19 +102,14 @@ make phpstan level=? (level can be 0-10)
 
 # TODO:
 
-- FIX THE ROUTER!!!!!
-- ADD COMMENTS TO THE CODE
 - Add authentication and authorization.
 - Add image upload for medications.
-- Add more forms for different api actions
 - Add openapi documentation via SwaggerUI
 - Add pagination and filter to reduce data size
 - Add more unit tests.
-- Add version control to the API.
-- run phpstan code analysis
+- Add version control to the API
 
 
 # Recommendations
 
-- Use symfony or laravel for a more robust and scalable application.
-- Use symfony for simple and working routing
+- Use symfony framework for better structure and security.
