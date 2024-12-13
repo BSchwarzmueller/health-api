@@ -2,7 +2,7 @@
 
 namespace tests\api\Controller;
 
-use App\Controllers\MedicationApiController;
+use App\Controllers\api\MedicationApiController;
 use App\Utils\DatabaseConnector;
 use App\Utils\QueryBuilder;
 use PHPUnit\Framework\TestCase;

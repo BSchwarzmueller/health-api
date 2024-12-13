@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\api;
 
 use App\Utils\DatabaseConnector;
 use App\Utils\QueryBuilder;
